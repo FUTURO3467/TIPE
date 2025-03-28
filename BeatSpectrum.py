@@ -1,12 +1,7 @@
-from threading import Thread
-
 import scipy.signal as sig
-import matplotlib.pyplot as plt
 import numpy as np
 import math
-import time
 import pydub
-import audio2numpy as a2n
 import threading
 
 
@@ -53,6 +48,19 @@ def PartialAutoCorrelationCalculation(envelope,ts, start, end):
         for j in range(1, ts):
             sum += (envelope[j] * envelope[j + i])
         xc[i] += sum
+
+def inflexion_points(arr, mspace):
+    m = mean(arr)
+    res = []
+    i = 1
+    while i < len(arr)-1:
+        if arr[i-1] < arr[i] > arr[i+1] and arr[i] >= m:
+            res.append(arr[i])
+            i+=mspace
+        i+=1
+    return res
+
+
 
 def AutoCorrelation(envelope, EnvelopeDecimated, MinBPM, MaxBPM, n=10):
     end = math.ceil((60 * EnvelopeDecimated) / (MinBPM))
@@ -121,7 +129,7 @@ Envelope3 = []
 Envelope4 = []
 Envelope5 = []
 Envelope6 = []
-def BeatSpectrum(f):
+def BeatSpectrum(data, samplerate):
     # Paramètres
     MinBPM = 40
     MaxBPM = 200
@@ -129,8 +137,6 @@ def BeatSpectrum(f):
 
     new_fs = 22050
     EnvelopeDecimated = 200
-
-    data, samplerate = a2n.audio_from_file(f)
 
     t = np.arange(len(data)) / float(samplerate)
 
@@ -172,12 +178,15 @@ def BeatSpectrum(f):
 
     for i in range(6):
         ts[i].join()
+
+
     global Envelope1
     global Envelope2
     global Envelope3
     global Envelope4
     global Envelope5
     global Envelope6
+
 
     EnvelopeDecimated1 = [Envelope1[i * c] for i in range(int(len(Envelope1) / c))]
     EnvelopeDecimated2 = [Envelope2[i * c] for i in range(int(len(Envelope2) / c))]
@@ -190,8 +199,6 @@ def BeatSpectrum(f):
     CorrelationEnvelope = AutoCorrelation(ResultEnvelop, EnvelopeDecimated, MinBPM, MaxBPM)
 
     BPMs = []
-    values = []
-    N = 15
 
     end = math.ceil((60 * EnvelopeDecimated) / (MinBPM))
 
@@ -204,15 +211,15 @@ def BeatSpectrum(f):
         BPM = (60 * EnvelopeDecimated) / i
         BPMs.append(BPM)
         y.append(CorrelationEnvelope[i])
-    return BPMs, y
+    maxs = inflexion_points(y, int((end-start)/20))
+    res = []
+    if len(maxs) == 0:
+        [max,pos] = maxwithpos(y)
+        res.append([60*EnvelopeDecimated/(pos+start), max])
 
-t1 = time.process_time()
-
-BPMs,y = BeatSpectrum("Sample.mp3")
-
-t2 = time.process_time()
-print(t2-t1)
-
-plt.plot(BPMs, y, c='r')
-plt.xlabel("BPM")
-plt.show()
+    j = 0
+    for i in range(len(y)):
+        if j < len(maxs) and y[i] == maxs[j]:
+            j += 1
+            res.append([BPMs[i], y[i]])
+    return res
