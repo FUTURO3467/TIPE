@@ -17,7 +17,6 @@ def SpectralFlux(data):
     max = (data[1]-data[0])**2
     min = (data[1]-data[0])**2
     tot = 0
-
     pics = []
     for i in range(1,len(data)):
         e=(data[i]-data[i-1])**2
@@ -33,9 +32,8 @@ def SpectralFlux(data):
     for i in range(len(pics)):
         if pics[i][0] >= max/2:
             correctedpics.append(pics[i])
-    print(correctedpics)
-    moy = (tot/(len(data)-1))
-    return (F, max, min, moy)
+    mean = (tot/(len(data)-1))
+    return (max, mean, correctedpics)
 
 
 
