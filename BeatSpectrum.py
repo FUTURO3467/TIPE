@@ -113,8 +113,8 @@ def Envelope(SubBand, DecimateValue, new_fs, numerator, denominator):
     LowPassSubBand = sig.filtfilt(numerator, denominator, SubBand)
 
     bands = sig.decimate(LowPassSubBand, DecimateValue)
-
-    MeanRemoval = bands - mean(bands)
+    m = mean(bands)
+    MeanRemoval = bands - m
 
     Tw = 0.1
     Nw = Tw * new_fs
