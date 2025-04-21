@@ -1,18 +1,31 @@
+from json import JSONDecodeError
+
 from TIPE.Utils import AudioAnalysis as AudioAnalysis
-import datetime
+from TIPE.Utils import BeatSpectrum as bs
+from TIPE.Classes import Classes
 import audio2numpy as a2n
+import json
+import io
 
-data, samplerate = a2n.audio_from_file("AudioFiles/Anonymous Choir - Cantate Domino.mp3")
+ch = io.open("MusicAnalysisResults.json", "w")
+def AnalyseAndSave(f, dest, genre):
+    global ch
+    data, samplerate = a2n.audio_from_file(f)
 
+    durationinsec = len(data)/samplerate
+    if hasattr(data[0], "__len__"):
+        data = data[:, 0]
+    SpecFlux = AudioAnalysis.SpectralFlux(data)
+    BeaSpe = bs.BeatSpectrum(data, samplerate)
+    ZeroXR = AudioAnalysis.zeroCrossingRate(data, durationinsec)
+    all = []
+    try:
+        all = json.loads(dest)
+    except JSONDecodeError:
+        all = []
+    print(f,genre,BeaSpe,SpecFlux,ZeroXR)
+    music = Classes.Music(f,genre, BeaSpe, SpecFlux, ZeroXR)
+    all.append(music.toJSONAble())
+    ch.write(json.dumps(all))
 
-durationinsec = len(data)/samplerate
-if hasattr(data[0], "__len__"):
-    data = data[:, 0]
-
-t1 = datetime.datetime.now()
-y = AudioAnalysis.SpectralFlux(data)
-print(y)
-
-#maxs = bs.BeatSpectrum(data, samplerate)
-t2 = datetime.datetime.now()
-print(t2-t1)
+AnalyseAndSave("AudioFiles/Anonymous Choir - Cantate Domino.mp3", "MusicAnalysisResults.json", "JEUSAIPA")

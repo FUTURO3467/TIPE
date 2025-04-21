@@ -5,6 +5,8 @@ class SpectralFluxOB:
         self.pics = pics
     def dist(self, other):
         return 0
+    def toJSONAble(self):
+        return [self.max, self.mean, self.pics]
 class Music:
     def __init__(self, path, genre, beatspectrum, spectralflux, zerocrossingrate):
         self.path = path
@@ -14,3 +16,5 @@ class Music:
         self.zerocrossingrate = zerocrossingrate
     def dist(self, other):
         return 0
+    def toJSONAble(self):
+        return [self.path, self.genre, self.beatspectrum, self.spectralflux.toJSONAble(), self.zerocrossingrate]

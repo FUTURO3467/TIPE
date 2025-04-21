@@ -4,9 +4,8 @@ import math
 import pydub
 import threading
 
-
+"""MP3 to numpy array"""
 def read(f, normalized=False):
-    """MP3 to numpy array"""
     a = pydub.AudioSegment.from_mp3(f)
     y = np.array(a.get_array_of_samples())
     if a.channels == 2:
@@ -221,5 +220,5 @@ def BeatSpectrum(data, samplerate):
     for i in range(len(y)):
         if j < len(maxs) and y[i] == maxs[j]:
             j += 1
-            res.append([BPMs[i], y[i]])
+            res.append([np.float64(BPMs[i]), np.float64(y[i])])
     return res
