@@ -1,7 +1,8 @@
 import numpy as np
 from scipy.fft import fft
+import matplotlib.pyplot as plt
 
-from TIPE.Classes import Classes
+from Classes import Classes
 
 def zeroCrossingRate(arr, duration):
     res = 0
@@ -30,14 +31,12 @@ def SpectralFlux(data):
         if i != len(data)-1 and F[i-1] < e < (data[i+1]-data[i])**2:
             pics.append((np.float64(e),i))
         F.append(e)
-    correctedpics = []
+    correctedpics = [[0,0]]
     for i in range(len(pics)):
         if pics[i][0] >= max/2:
             correctedpics.append(pics[i])
     mean = (tot/(len(data)-1))
     res = Classes.SpectralFluxOB(np.float64(max), np.float64(mean), correctedpics)
+    #plt.plot([i for i in range(len(F))], F)
+    #plt.show()
     return res
-
-
-
-
