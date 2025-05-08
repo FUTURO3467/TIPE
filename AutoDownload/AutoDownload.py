@@ -44,10 +44,10 @@ def log_in():
         email = driver.find_element(By.XPATH, '//*[@id="email"]')
         email.click()
         email.clear()
-        email.send_keys("joublotleopold@gmail.com")
+        email.send_keys("EMAIL")
         password = driver.find_element(By.XPATH, '//*[@id="password"]')
         password.clear()
-        password.send_keys("Futuro34670;")
+        password.send_keys("PASSWORD")
         password.send_keys(Keys.ENTER)
 
     except:
