@@ -1,15 +1,13 @@
-from json import JSONDecodeError
+from audioread import NoBackendError
 
 from Utils import AudioAnalysis as AudioAnalysis
 from Utils import BeatSpectrum as bs
 from Classes import Classes
 import audio2numpy as a2n
 import json
-import io
+import os
 
-ch = io.open("MusicAnalysisResults.json", "a")
 def AnalyseAndSave(f, dest, genre):
-    global ch
     data, samplerate = a2n.audio_from_file(f)
 
     durationinsec = len(data)/samplerate
@@ -18,23 +16,35 @@ def AnalyseAndSave(f, dest, genre):
     SpecFlux = AudioAnalysis.SpectralFlux(data)
     BeaSpe = bs.BeatSpectrum(data, samplerate)
     ZeroXR = AudioAnalysis.zeroCrossingRate(data, durationinsec)
-    all = []
-    fh = open(dest, 'rb')
-    ba = bytearray(fh.read())
-    try:
-        all = json.loads(ba)
-    except JSONDecodeError:
-        all = []
-    print(f,genre,BeaSpe,SpecFlux.pics,ZeroXR)
-    music = Classes.Music(f,genre, BeaSpe, SpecFlux, ZeroXR)
-    all.append(music.toJSONAble())
-    ch.write(json.dumps(all))
+    with open(dest,'r+') as file:
+        fdata = json.load(file)
+        music = Classes.Music(f,genre, BeaSpe, SpecFlux, ZeroXR)
+        fdata["Musics"].append(music.toJSONAble())
+        file.seek(0)
+        json.dump(fdata, file, indent = 4)
     return music
 
-m1 = AnalyseAndSave("AudioFiles/Sample.mp3", "MusicAnalysisResults.json", "JEUSAIPA")
-m2 = AnalyseAndSave("AudioFiles/Megatone - Black and White 03.mp3", "MusicAnalysisResults.json", "JEUSAIPA")
-m3 = AnalyseAndSave("AudioFiles/Anonymous Choir - Cantate Domino.mp3","MusicAnalysisResults.json", "JSPNONPLUS")
+saveFile = "MusicAnalysisResults.json"
 
-print(m1.dist(m2), m1.dist(m3))
-print(m2.dist(m1), m2.dist(m3))
-print(m3.dist(m1), m3.dist(m2))
+def startAnalysis():
+    global saveFile
+    SourceDirectory = input("Where are the musics ? ")
+    howmany = int(input("How many musics do you want to analyze?"))
+    whereToBegin = int(input("Begin on which music ?"))
+    MusicalGenre = input("Which genre of music is it ?")
+
+    files = os.listdir(SourceDirectory)
+    failed = 0
+    failedList = []
+    for i in range(whereToBegin, min(len(files), whereToBegin+howmany)):
+        path = (SourceDirectory+"\\"+files[i])
+        print(path)
+        print(i-whereToBegin,"/", min(len(files), howmany))
+        try:
+            AnalyseAndSave(path, saveFile, MusicalGenre)
+        except a2n.loader.NoBackendError:
+            failed+=1
+            failedList.append(path)
+        print("Analysed and saved  :", files[i].title())
+
+    print(failed,"musics failed to be analyzed", failedList)

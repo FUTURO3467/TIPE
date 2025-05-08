@@ -11,7 +11,7 @@ class SpectralFluxOB:
         return arrdist/((len(other.pics)*len(self.pics))*(10e11))
 
     def toJSONAble(self):
-        return [self.max, self.mean, self.pics]
+        return {"max":self.max, "mean":self.mean, "pics":self.pics}
 class Music:
     def __init__(self, path, genre, beatspectrum, spectralflux, zerocrossingrate):
         self.path = path
@@ -29,4 +29,4 @@ class Music:
         ZCRdist = abs(self.zerocrossingrate-other.zerocrossingrate)
         return SFdist + arrdist + ZCRdist
     def toJSONAble(self):
-        return [self.path, self.genre, self.beatspectrum, self.spectralflux.toJSONAble(), self.zerocrossingrate]
+        return {"path":self.path, "genre":self.genre, "beatspectrum":self.beatspectrum, "spectralFlux":self.spectralflux.toJSONAble(), "zerocrossingrate":self.zerocrossingrate}
