@@ -48,3 +48,6 @@ def startAnalysis():
         print("Analysed and saved  :", files[i].title())
 
     print(failed,"musics failed to be analyzed", failedList)
+
+
+startAnalysis()
