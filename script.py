@@ -9,7 +9,6 @@ import os
 
 def AnalyseAndSave(f, dest, genre):
     data, samplerate = a2n.audio_from_file(f)
-
     durationinsec = len(data)/samplerate
     if hasattr(data[0], "__len__"):
         data = data[:, 0]
@@ -42,7 +41,7 @@ def startAnalysis():
         print(i-whereToBegin,"/", min(len(files), howmany))
         try:
             AnalyseAndSave(path, saveFile, MusicalGenre)
-        except a2n.loader.NoBackendError:
+        except (a2n.loader.NoBackendError,ZeroDivisionError) as e:
             failed+=1
             failedList.append(path)
         print("Analysed and saved  :", files[i].title())
