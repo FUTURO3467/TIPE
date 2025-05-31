@@ -30,3 +30,10 @@ class Music:
         return SFdist + arrdist + ZCRdist
     def toJSONAble(self):
         return {"path":self.path, "genre":self.genre, "beatspectrum":self.beatspectrum, "spectralFlux":self.spectralflux.toJSONAble(), "zerocrossingrate":self.zerocrossingrate}
+def MusicfromJSON(elem):
+    path = elem["path"]
+    genre = elem["genre"]
+    beatspectrum = elem["beatspectrum"]
+    spectralFlux = SpectralFluxOB(elem["spectralFlux"]["max"],elem["spectralFlux"]["mean"],elem["spectralFlux"]["pics"])
+    zerocrossingrate = elem["zerocrossingrate"]
+    return Music(path,genre,beatspectrum,spectralFlux,zerocrossingrate)

@@ -1,0 +1,23 @@
+{
+ "Count5Rock": 7,
+ "CountSuccess5Rock": 4,
+ "SuccessRate5Rock": 0.5714,
+ "Count10Rock": 7,
+ "CountSuccess10Rock": 4,
+ "SuccessRate10Rock": 0.5714,
+ "Count20Rock": 7,
+ "CountSuccess20Rock": 5,
+ "SuccessRate20Rock": 0.7143,
+ "Count10Classical": 970,
+ "CountSuccess10Classical": 541,
+ "SuccessRate10Classical": 0.5577,
+ "Count5HipHop": 999,
+ "CountSuccess5HipHop": 619,
+ "SuccessRate5HipHop": 0.6196,
+ "Count10HipHop": 999,
+ "CountSuccess10HipHop": 710,
+ "SuccessRate10HipHop": 0.7107,
+ "Count20HipHop": 999,
+ "CountSuccess20HipHop": 744,
+ "SuccessRate20HipHop": 0.7447
+}
