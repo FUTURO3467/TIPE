@@ -1,3 +1,7 @@
+import numpy as np
+from scipy.spatial.distance import euclidean
+
+
 class SpectralFluxOB:
     def __init__(self, max, mean, pics):
         self.max = max
@@ -13,14 +17,18 @@ class SpectralFluxOB:
     def toJSONAble(self):
         return {"max":self.max, "mean":self.mean, "pics":self.pics}
 class Music:
-    def __init__(self, path, genre, beatspectrum, spectralflux, zerocrossingrate):
+    def __init__(self, path, genre, beat_spectrum, spectral_flux, zero_crossing_rate, spectral_centroid):
         self.path = path
         self.genre = genre
-        self.beatspectrum = beatspectrum
-        self.spectralflux = spectralflux
-        self.zerocrossingrate = zerocrossingrate
+        self.beatspectrum = beat_spectrum
+        self.spectralflux = spectral_flux
+        self.zerocrossingrate = zero_crossing_rate
+        self.spectral_centroid = spectral_centroid
+        print(spectral_centroid)
+
     def dist(self, other):
-        SFdist = self.spectralflux.dist(other.spectralflux)
+        SFdist = euclidean(self.spectralflux, other.spectralflux)
+        print(SFdist)
         arrdist = 0
         for i in range(len(other.beatspectrum)):
             for j in range(len(self.beatspectrum)):
@@ -28,12 +36,17 @@ class Music:
         arrdist = arrdist/(len(other.beatspectrum)*len(self.beatspectrum))
         ZCRdist = abs(self.zerocrossingrate-other.zerocrossingrate)
         return SFdist + arrdist + ZCRdist
+
     def toJSONAble(self):
-        return {"path":self.path, "genre":self.genre, "beatspectrum":self.beatspectrum, "spectralFlux":self.spectralflux.toJSONAble(), "zerocrossingrate":self.zerocrossingrate}
+        return {"path":self.path, "genre":self.genre, "beatspectrum":self.beatspectrum, "spectralFlux":self.spectralflux.tolist(), "zerocrossingrate":self.zerocrossingrate, "spectral_centroid": self.spectral_centroid}
+
 def MusicfromJSON(elem):
     path = elem["path"]
     genre = elem["genre"]
     beatspectrum = elem["beatspectrum"]
-    spectralFlux = SpectralFluxOB(elem["spectralFlux"]["max"],elem["spectralFlux"]["mean"],elem["spectralFlux"]["pics"])
+    spectralFlux = elem["spectralFlux"]
     zerocrossingrate = elem["zerocrossingrate"]
-    return Music(path,genre,beatspectrum,spectralFlux,zerocrossingrate)
+    spectral_centroid = np.float64(-1)
+    if elem.__contains__("spectral_centroid"):
+        spectral_centroid = elem["spectral_centroid"]
+    return Music(path,genre,beatspectrum,spectralFlux,zerocrossingrate, spectral_centroid)

@@ -137,4 +137,26 @@ def startTest():
 
 
 #startAnalysis()
-startTest()
+#startTest()
+
+with open(saveFile, 'r+') as file:
+    fdata = json.load(file)
+    i=0
+    for elem in fdata["Musics"]:
+        print(i)
+        i+=1
+        music = Classes.MusicfromJSON(elem)
+        if not isinstance(music.spectralflux, dict) : continue
+        try:
+            data, samplerate = a2n.audio_from_file(music.path)
+            if hasattr(data[0], "__len__"):
+                data = data[:, 0]
+            elem.setdefault("spectral_centroid", AudioAnalysis.spectral_centroid(data, samplerate))
+            print("Analysed and saved  :", music.path)
+        except (a2n.loader.NoBackendError,ZeroDivisionError) as e:
+            print("File open fail")
+        file.seek(0)
+        json.dump(fdata, file, indent=4)
+
+
+
