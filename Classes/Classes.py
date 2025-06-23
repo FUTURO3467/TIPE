@@ -1,21 +1,6 @@
 import numpy as np
 from scipy.spatial.distance import euclidean
 
-
-class SpectralFluxOB:
-    def __init__(self, max, mean, pics):
-        self.max = max
-        self.mean = mean
-        self.pics = pics
-    def dist(self, other):
-        arrdist = 0
-        for i in range(len(other.pics)):
-            for j in range(len(self.pics)):
-                arrdist+=(other.pics[i][0]-self.pics[j][0])**2 + (other.pics[i][1]-self.pics[j][1])**2
-        return arrdist/((len(other.pics)*len(self.pics))*(10e11))
-
-    def toJSONAble(self):
-        return {"max":self.max, "mean":self.mean, "pics":self.pics}
 class Music:
     def __init__(self, path, genre, beat_spectrum, spectral_flux, zero_crossing_rate, spectral_centroid):
         self.path = path
@@ -24,18 +9,18 @@ class Music:
         self.spectralflux = spectral_flux
         self.zerocrossingrate = zero_crossing_rate
         self.spectral_centroid = spectral_centroid
-        print(spectral_centroid)
 
     def dist(self, other):
         SFdist = euclidean(self.spectralflux, other.spectralflux)
-        print(SFdist)
         arrdist = 0
         for i in range(len(other.beatspectrum)):
             for j in range(len(self.beatspectrum)):
                 arrdist+=(other.beatspectrum[i][0]-self.beatspectrum[j][0])**2 + (other.beatspectrum[i][1]-self.beatspectrum[j][1])**2
         arrdist = arrdist/(len(other.beatspectrum)*len(self.beatspectrum))
         ZCRdist = abs(self.zerocrossingrate-other.zerocrossingrate)
-        return SFdist + arrdist + ZCRdist
+        scDist = abs(self.spectral_centroid-other.spectral_centroid)
+        # *10 and /10 are there to set every distance to a scale of 1000 (give them the same weight)
+        return SFdist*10 + arrdist/10 + ZCRdist + scDist
 
     def toJSONAble(self):
         return {"path":self.path, "genre":self.genre, "beatspectrum":self.beatspectrum, "spectralFlux":self.spectralflux.tolist(), "zerocrossingrate":self.zerocrossingrate, "spectral_centroid": self.spectral_centroid}
@@ -50,3 +35,24 @@ def MusicfromJSON(elem):
     if elem.__contains__("spectral_centroid"):
         spectral_centroid = elem["spectral_centroid"]
     return Music(path,genre,beatspectrum,spectralFlux,zerocrossingrate, spectral_centroid)
+
+
+
+
+
+
+#Unused
+class SpectralFluxOB:
+    def __init__(self, max, mean, pics):
+        self.max = max
+        self.mean = mean
+        self.pics = pics
+    def dist(self, other):
+        arrdist = 0
+        for i in range(len(other.pics)):
+            for j in range(len(self.pics)):
+                arrdist+=(other.pics[i][0]-self.pics[j][0])**2 + (other.pics[i][1]-self.pics[j][1])**2
+        return arrdist/((len(other.pics)*len(self.pics))*(10e11))
+
+    def toJSONAble(self):
+        return {"max":self.max, "mean":self.mean, "pics":self.pics}

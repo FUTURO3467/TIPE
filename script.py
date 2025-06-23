@@ -9,6 +9,10 @@ import audio2numpy as a2n
 import json
 import os
 import numpy as np
+
+from Utils.AudioAnalysis import spectral_centroid
+
+
 def AnalyseAndSave(f, dest, genre):
     data, samplerate = a2n.audio_from_file(f)
     durationinsec = len(data)/samplerate
@@ -75,10 +79,11 @@ def startTest():
             durationinsec = len(data) / samplerate
             if hasattr(data[0], "__len__"):
                 data = data[:, 0]
-            SpecFlux = AudioAnalysis.SpectralFlux(data)
+            SpecFlux = AudioAnalysis.SpectralFlux(data, samplerate)
             BeaSpe = bs.BeatSpectrum(data, samplerate)
             ZeroXR = AudioAnalysis.zeroCrossingRate(data, durationinsec)
-            music = Classes.Music(path, "", BeaSpe, SpecFlux, ZeroXR)
+            spectral_centroid = AudioAnalysis.spectral_centroid(data, samplerate)
+            music = Classes.Music(path, MusicalGenre, BeaSpe, SpecFlux, ZeroXR, spectral_centroid)
             distances = []
             for m in musicsbdd:
                 distances.append([music.dist(m),m])
@@ -89,6 +94,7 @@ def startTest():
             i=0
             file = open(saveTestFile, 'r')
             fdata = json.load(file)
+            fdata["Musics"].append(music.toJSONAble())
             for r in result:
                 i+=1
                 if resultdict.__contains__(r[1].genre):
@@ -139,26 +145,25 @@ def startTest():
 
 #startAnalysis()
 #startTest()
+def calculateCentralSpectroid():
+    with open(saveFile, 'r+') as file:
+        fdata = json.load(file)
+        i = 0
+        print(len(fdata["Musics"]))
+        for elem in fdata["Musics"]:
+            print(i)
+            i += 1
+            music = Classes.MusicfromJSON(elem)
+            if music.spectral_centroid > 0: continue
+            try:
+                data, samplerate = a2n.audio_from_file(music.path)
+                if hasattr(data[0], "__len__"):
+                    data = data[:, 0]
+                elem.setdefault("spectral_centroid", AudioAnalysis.spectral_centroid(data, samplerate))
+                print("Analysed and saved  :", music.path)
+            except (a2n.loader.NoBackendError, ZeroDivisionError) as e:
+                print("File open fail")
+            file.seek(0)
+            json.dump(fdata, file, indent=4)
 
-with open(saveFile, 'r+') as file:
-    fdata = json.load(file)
-    i=0
-    print(len(fdata["Musics"]))
-    for elem in fdata["Musics"]:
-        print(i)
-        i+=1
-        music = Classes.MusicfromJSON(elem)
-        if music.spectral_centroid > 0 : continue
-        try:
-            data, samplerate = a2n.audio_from_file(music.path)
-            if hasattr(data[0], "__len__"):
-                data = data[:, 0]
-            elem.setdefault("spectral_centroid", AudioAnalysis.spectral_centroid(data, samplerate))
-            print("Analysed and saved  :", music.path)
-        except (a2n.loader.NoBackendError,ZeroDivisionError) as e:
-            print("File open fail")
-        file.seek(0)
-        json.dump(fdata, file, indent=4)
-
-
-
+startTest()
