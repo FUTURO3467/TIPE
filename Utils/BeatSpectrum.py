@@ -61,7 +61,7 @@ def inflexion_points(arr, mspace):
 
 
 
-def AutoCorrelation(envelope, EnvelopeDecimated, MinBPM, MaxBPM, n=10):
+def AutoCorrelation(envelope, EnvelopeDecimated, MinBPM, MaxBPM, n=6):
     end = math.ceil((60 * EnvelopeDecimated) / (MinBPM))
 
     start = math.ceil((60 * EnvelopeDecimated) / (MaxBPM))
@@ -86,7 +86,6 @@ def AutoCorrelation(envelope, EnvelopeDecimated, MinBPM, MaxBPM, n=10):
     #        sum += (envelope[j] * envelope[j + i])
     #    xc[i] += sum
     #print(time.process_time()-t1)
-    print(end-start, len(xc))
     return xc
 
 
