@@ -16,6 +16,133 @@ def read(f, normalized=False):
         return a.frame_rate, y
 
 
+import numpy as np
+from scipy.stats import skew, kurtosis, entropy
+from scipy.signal import find_peaks
+
+
+def beatspectrum_features(hist, bpms):
+    """
+    hist  : tableau d'amplitudes du Beat Spectrum (ex: ton y)
+    bpms  : tableau des BPM correspondants (ex: ton BPMs)
+
+    Retourne un vecteur de 20 features.
+    """
+
+    hist = np.array(hist, dtype=float)
+    bpms = np.array(bpms, dtype=float)
+
+    hist = np.maximum(hist, 1e-12)
+    H = np.sum(hist)
+    N = len(hist)
+
+    # ---- 1. mean ----
+    f_mean = np.mean(hist)
+
+    # ---- 2. std ----
+    f_std = np.std(hist)
+
+    # ---- 3. skewness ----
+    f_skew = skew(hist)
+
+    # ---- 4. kurtosis ----
+    f_kurt = kurtosis(hist)
+
+    # ---- 5. max amplitude ----
+    f_max = np.max(hist)
+
+    # ---- 6. index du pic principal ----
+    idx1 = np.argmax(hist)
+
+    # ---- 7. somme totale ----
+    f_sum = H
+
+    # ---- 8. entropie ----
+    p = hist / H
+    f_entropy = entropy(p)
+
+    # ---- Trouver tous les pics locaux ----
+    peaks, _ = find_peaks(hist)
+    peak_values = hist[peaks]
+
+    # S’il n'y a pas assez de pics, on complète
+    if len(peaks) < 2:
+        # fabriquer un second pic fictif ultra faible
+        peaks = np.append(peaks, idx1)
+        peak_values = np.append(peak_values, hist[idx1] * 0.0001)
+
+    # ---- 9. ratio premier pic / second pic ----
+    # trier les pics par amplitude
+    top2_indices = np.argsort(peak_values)[-2:]
+    p1, p2 = peak_values[top2_indices[1]], peak_values[top2_indices[0]]
+    idx_p1, idx_p2 = peaks[top2_indices[1]], peaks[top2_indices[0]]
+
+    f_ratio12 = p1 / p2 if p2 != 0 else 0
+
+    # ---- 10. index du second pic ----
+    # (le second le plus haut)
+    f_idx2 = idx_p2
+
+    # ---- 11. deuxième amplitude (autocorr secondaire) ----
+    f_second_amp = p2
+
+    # ---- 12. energy compactness ----
+    f_compactness = f_max / H
+
+    # ---- 13. periodicity index ----
+    f_periodicity = f_max / f_mean
+
+    # ---- 14. BPM pic principal ----
+    f_bpm1 = bpms[idx1]
+
+    # ---- 15. BPM second pic ----
+    f_bpm2 = bpms[idx_p2]
+
+    # ---- 16. histogram width (largeur) ----
+    # distance moyenne pondérée au pic principal
+    indices = np.arange(N)
+    f_width = np.sum(np.abs(indices - idx1) * hist) / H
+
+    # ---- 17. sparsity ----
+    # sqrt(N) * ||hist||_2 / ||hist||_1
+    f_sparsity = np.sqrt(N) * (np.linalg.norm(hist, 2) / np.linalg.norm(hist, 1))
+
+    # ---- 18. flatness ----
+    geo_mean = np.exp(np.mean(np.log(hist)))
+    f_flatness = geo_mean / f_mean
+
+    # ---- 19. peak density ----
+    f_peak_density = len(peaks) / N
+
+    # ---- 20. local peak variability ----
+    f_lpv = np.var(peak_values)
+
+    # Regroupe tout dans un vecteur le float(f) est pour la transformation en JSON
+    return [float(f) for f in
+                [
+                f_mean,
+                f_std,
+                f_skew,
+                f_kurt,
+                f_max,
+                float(idx1),
+                f_sum,
+                f_entropy,
+                f_ratio12,
+                float(f_idx2),
+                f_second_amp,
+                f_compactness,
+                f_periodicity,
+                f_bpm1,
+                f_bpm2,
+                f_width,
+                f_sparsity,
+                f_flatness,
+                f_peak_density,
+                f_lpv
+                ]
+            ]
+
 def mean(a):
     tot = 0
     l = len(a)
@@ -40,6 +167,7 @@ def getpos(e, a):
     return -1
 
 xc = []
+
 
 def PartialAutoCorrelationCalculation(envelope,ts, start, end):
     for i in range(start, end):
@@ -209,15 +337,4 @@ def BeatSpectrum(data, samplerate):
         BPM = (60 * EnvelopeDecimated) / i
         BPMs.append(BPM)
         y.append(CorrelationEnvelope[i])
-    maxs = inflexion_points(y, int((end-start)/20))
-    res = []
-    if len(maxs) == 0:
-        [max,pos] = maxwithpos(y)
-        res.append([60*EnvelopeDecimated/(pos+start), max])
-
-    j = 0
-    for i in range(len(y)):
-        if j < len(maxs) and y[i] == maxs[j]:
-            j += 1
-            res.append([np.float64(BPMs[i]), np.float64(y[i])])
-    return res
+    return beatspectrum_features(y, BPMs)

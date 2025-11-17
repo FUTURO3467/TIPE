@@ -12,15 +12,11 @@ class Music:
 
     def dist(self, other):
         SFdist = euclidean(self.spectralflux, other.spectralflux)
-        arrdist = 0
-        for i in range(len(other.beatspectrum)):
-            for j in range(len(self.beatspectrum)):
-                arrdist+=(other.beatspectrum[i][0]-self.beatspectrum[j][0])**2 + (other.beatspectrum[i][1]-self.beatspectrum[j][1])**2
-        arrdist = arrdist/(len(other.beatspectrum)*len(self.beatspectrum))
+        BSdist = euclidean(self.beatspectrum, other.beatspectrum)
         ZCRdist = abs(self.zerocrossingrate-other.zerocrossingrate)
         scDist = abs(self.spectral_centroid-other.spectral_centroid)
         # *10 and /10 are there to set every distance to a scale of 1000 (give them the same weight)
-        return SFdist*10 + arrdist/10 + ZCRdist + scDist
+        return SFdist + BSdist + ZCRdist + scDist
 
     def toJSONAble(self):
         return {"path":self.path, "genre":self.genre, "beatspectrum":self.beatspectrum, "spectralFlux":self.spectralflux.tolist(), "zerocrossingrate":self.zerocrossingrate, "spectral_centroid": self.spectral_centroid}

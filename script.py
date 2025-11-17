@@ -18,12 +18,13 @@ def AnalyseAndSave(f, dest, genre):
     durationinsec = len(data)/samplerate
     if hasattr(data[0], "__len__"):
         data = data[:, 0]
-    SpecFlux = AudioAnalysis.SpectralFlux(data)
+    SpecFlux = AudioAnalysis.SpectralFlux(data, samplerate)
     BeaSpe = bs.BeatSpectrum(data, samplerate)
     ZeroXR = AudioAnalysis.zeroCrossingRate(data, durationinsec)
+    spec_centro = AudioAnalysis.spectral_centroid(data, samplerate)
     with open(dest,'r+') as file:
         fdata = json.load(file)
-        music = Classes.Music(f,genre, BeaSpe, SpecFlux, ZeroXR)
+        music = Classes.Music(f,genre, BeaSpe, SpecFlux, ZeroXR,spec_centro)
         fdata["Musics"].append(music.toJSONAble())
         file.seek(0)
         json.dump(fdata, file, indent = 4)
