@@ -135,8 +135,8 @@ def startTest():
 
 #startAnalysis()
 #startTest()
-def calculate_for_all(key, func, ignore_condition):
-    with open(saveFile, 'r+') as file:
+def calculate_for_all(key, func, ignore_condition, filepath):
+    with open(filepath, 'r+') as file:
         fdata = json.load(file)
         i = 0
         print(len(fdata["Musics"]))
@@ -149,11 +149,15 @@ def calculate_for_all(key, func, ignore_condition):
                 data, samplerate = a2n.audio_from_file(music.path)
                 if hasattr(data[0], "__len__"):
                     data = data[:, 0]
-                elem.setdefault(key, func(data, samplerate))
+                res = func(data, samplerate)
+                elem.setdefault(key, res)
+                print(res)
+                fdata["Musics"][i-1][key] = res
                 print("Analysed and saved  :", music.path)
             except (a2n.loader.NoBackendError, ZeroDivisionError) as e:
                 print("File open fail")
             file.seek(0)
             json.dump(fdata, file, indent=4)
+calculate_for_all("beatspectrum", bs.BeatSpectrum, lambda a : len(a.beatspectrum) == 20, saveTestFile)
 
-startTest()
+#startTest()

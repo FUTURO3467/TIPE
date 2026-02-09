@@ -74,8 +74,15 @@ def beatspectrum_features(hist, bpms):
     # ---- 9. ratio premier pic / second pic ----
     # trier les pics par amplitude
     top2_indices = np.argsort(peak_values)[-2:]
-    p1, p2 = peak_values[top2_indices[1]], peak_values[top2_indices[0]]
-    idx_p1, idx_p2 = peaks[top2_indices[1]], peaks[top2_indices[0]]
+    p1, p2 = 0, 0
+    idx_p1, idx_p2 = 0, 0
+    if len(top2_indices) >= 2:
+        p1, p2 = peak_values[top2_indices[1]], peak_values[top2_indices[0]]
+        idx_p1, idx_p2 = peaks[top2_indices[1]], peaks[top2_indices[0]]
+    elif len(top2_indices) == 1:
+        p2 = peak_values[top2_indices[0]]
+        idx_p1 = peaks[top2_indices[0]]
+
 
     f_ratio12 = p1 / p2 if p2 != 0 else 0
 
