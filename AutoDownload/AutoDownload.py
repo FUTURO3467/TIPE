@@ -5,7 +5,7 @@ from selenium.webdriver.common.keys import Keys
 import time
 from selenium.webdriver.chrome.options import Options
 
-fileName = "D:\BDDTIPE\DownloadClassical.txt"
+fileName = r"D:\BDDTIPE\DownloadJazz.txt"
 links = []
 with open(fileName, 'r') as file:
     # Read each line in the file
@@ -14,7 +14,7 @@ with open(fileName, 'r') as file:
         links.append(line.strip())
 
 service = Service(executable_path="chromedriver.exe")
-dlpath = r'D:\BDDTIPE\Classical'
+dlpath = r'D:\BDDTIPE\Jazz'
 
 chrome_options = Options()
 chrome_options.add_experimental_option('prefs', {
@@ -44,10 +44,10 @@ def log_in():
         email = driver.find_element(By.XPATH, '//*[@id="email"]')
         email.click()
         email.clear()
-        email.send_keys("EMAIL")
+        email.send_keys("joublotleopold@gmail.com")
         password = driver.find_element(By.XPATH, '//*[@id="password"]')
         password.clear()
-        password.send_keys("PASSWORD")
+        password.send_keys("Futuro34670;")
         password.send_keys(Keys.ENTER)
 
     except:

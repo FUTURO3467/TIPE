@@ -1,0 +1,14 @@
+{
+ "Classical_Test": 969,
+ "Classical_Succes": 786,
+ "HipHop_Test": 995,
+ "HipHop_Succes": 605,
+ "Jazz_Test": 1045,
+ "Jazz_Succes": 240,
+ "Rock_Test": 994,
+ "Rock_Succes": 622,
+ "Classical_Ratio": 0.8111,
+ "HipHop_Ratio": 0.608,
+ "Jazz_Ratio": 0.2297,
+ "Rock_Ratio": 0.6258
+}

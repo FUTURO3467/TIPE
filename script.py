@@ -2,6 +2,7 @@ import time
 
 from audioread import NoBackendError
 
+from Classes.Classes import MusicfromJSON
 from Utils import AudioAnalysis as AudioAnalysis
 from Utils import BeatSpectrum as bs
 from Classes import Classes
@@ -9,6 +10,7 @@ import audio2numpy as a2n
 import json
 import os
 import numpy as np
+from math import sqrt
 
 from Utils.AudioAnalysis import spectral_centroid
 
@@ -28,6 +30,8 @@ def AnalyseAndSave(f, dest, genre):
         fdata["Musics"].append(music.toJSONAble())
         file.seek(0)
         json.dump(fdata, file, indent = 4)
+        
+
     return music
 
 saveFile = "MusicAnalysisResults.json"
@@ -58,12 +62,17 @@ def startAnalysis():
 
 
 def registerResult(calculated_genre , musical_genre, fdata, number=20):
-    print(number,":", calculated_genre)
+    #print(number,":", calculated_genre)
     success = (calculated_genre == musical_genre)
-    fdata["Count"+str(number) + musical_genre] += 1
-    newcount = fdata["Count"+str(number) + musical_genre]
-    fdata["CountSuccess"+str(number) + musical_genre] += success
-    fdata["SuccessRate"+str(number) + musical_genre] = round(((fdata["CountSuccess"+str(number) + musical_genre]) / newcount), 4)
+    if ("Count"+str(number) + musical_genre) in fdata:
+        fdata["Count"+str(number) + musical_genre] += 1
+        newcount = fdata["Count"+str(number) + musical_genre]
+        fdata["CountSuccess"+str(number) + musical_genre] += success
+        fdata["SuccessRate"+str(number) + musical_genre] = round(((fdata["CountSuccess"+str(number) + musical_genre]) / newcount), 4)
+    else:
+        fdata["Count"+str(number) + musical_genre] = 1
+        fdata["CountSuccess"+str(number) + musical_genre] = success
+        fdata["SuccessRate"+str(number) + musical_genre] = round(success, 4)
 
 def startTest():
     SourceDirectory = input("Where are the musics ? ")
@@ -96,7 +105,7 @@ def startTest():
             for m in musicdb:
                 distances.append([music.dist(m),m])
             distances.sort(key=lambda x: x[0])
-            kclosest=20
+            kclosest = round(sqrt(len(musicdb)))
             result = [distances[i] for  i in range(kclosest)]
             resultdict = {}
             i=0
@@ -104,20 +113,23 @@ def startTest():
             fdata = json.load(file)
             fdata["Musics"].append(music.toJSONAble())
             for r in result:
-                i+=1
+                i += 1
                 if resultdict.__contains__(r[1].genre):
-                    resultdict[r[1].genre] += (1/kclosest)
+                    resultdict[r[1].genre] += (1 / kclosest)
                 else:
-                    resultdict.setdefault(r[1].genre, (1/kclosest))
+                    resultdict.setdefault(r[1].genre, (1 / kclosest))
                 if i == 5:
                     calculated_genre = max(resultdict, key=resultdict.get)
-                    registerResult(calculated_genre, MusicalGenre, fdata, 5)
+                    registerResult(calculated_genre, music.genre, fdata, 5)
                 elif i == 10:
                     calculated_genre = max(resultdict, key=resultdict.get)
-                    registerResult(calculated_genre, MusicalGenre, fdata, 10)
+                    registerResult(calculated_genre, music.genre, fdata, 10)
+                elif i == 20:
+                    calculated_genre = max(resultdict, key=resultdict.get)
+                    registerResult(calculated_genre, music.genre, fdata, 20)
 
             calculated_genre = max(resultdict, key=resultdict.get)
-            registerResult(calculated_genre, MusicalGenre, fdata, 20)
+            registerResult(calculated_genre, music.genre, fdata, kclosest)
 
             file.close()
             file = open(saveTestFile, 'w+')
@@ -133,8 +145,49 @@ def startTest():
 
     print(failed, "musics failed to be tested", failedList)
 
+def test_precalc():
+    musicdb = []
+    with open(saveFile, 'r+') as file:
+        fdata = json.load(file)
+        for elem in fdata["Musics"]:
+            musicdb.append(Classes.MusicfromJSON(elem))
+    with open(saveTestFile, 'r+') as file:
+        fdata = json.load(file)
+        for elem in fdata["Musics"]:
+            music = MusicfromJSON(elem)
+            distances = []
+            for m in musicdb:
+                distances.append([music.dist(m),m])
+            distances.sort(key=lambda x: x[0])
+            kclosest=round(sqrt(len(musicdb)))
+            result = [distances[i] for  i in range(kclosest)]
+            resultdict = {}
+            i=0
+            for r in result:
+                i+=1
+                if resultdict.__contains__(r[1].genre):
+                    resultdict[r[1].genre] += (1/kclosest)
+                else:
+                    resultdict.setdefault(r[1].genre, (1/kclosest))
+                if i == 5:
+                    calculated_genre = max(resultdict, key=resultdict.get)
+                    registerResult(calculated_genre, music.genre, fdata, 5)
+                elif i == 10:
+                    calculated_genre = max(resultdict, key=resultdict.get)
+                    registerResult(calculated_genre, music.genre, fdata, 10)
+                elif i == 20:
+                    calculated_genre = max(resultdict, key=resultdict.get)
+                    registerResult(calculated_genre, music.genre, fdata, 20)
+
+            calculated_genre = max(resultdict, key=resultdict.get)
+            registerResult(calculated_genre, music.genre, fdata, kclosest)
+
+            file2 = open(saveTestFile, 'w+')
+            json.dump(fdata, file2, indent=1)
+            file2.close()
+#test_precalc()
 #startAnalysis()
-#startTest()
+startTest()
 def calculate_for_all(key, func, ignore_condition, filepath):
     with open(filepath, 'r+') as file:
         fdata = json.load(file)
@@ -158,6 +211,6 @@ def calculate_for_all(key, func, ignore_condition, filepath):
                 print("File open fail")
             file.seek(0)
             json.dump(fdata, file, indent=4)
-calculate_for_all("beatspectrum", bs.BeatSpectrum, lambda a : len(a.beatspectrum) == 20, saveTestFile)
+#calculate_for_all("beatspectrum", bs.BeatSpectrum, lambda a : len(a.beatspectrum) == 20, saveTestFile)
 
 #startTest()

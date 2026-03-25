@@ -1,0 +1,12 @@
+{
+ "Rock_Test": 994,
+ "Rock_Succes": 988,
+ "Rock_Ratio": 0.994,
+ "Classical_Test": 969,
+ "Classical_Succes": 163,
+ "Classical_Ratio": 0.1682,
+ "HipHop_Test": 995,
+ "HipHop_Succes": 410,
+ "HipHop_Ratio": 0.4121,
+  "confusion" : [[163, 1, 1],[11, 410, 5],[795, 584, 988]]
+}

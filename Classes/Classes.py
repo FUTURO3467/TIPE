@@ -1,6 +1,9 @@
 import numpy as np
 from scipy.spatial.distance import euclidean
 
+def contiens_None(m):
+    return m.beatspectrum is None or m.beatspectrum is None or m.zerocrossingrate is None or m.spectral_centroid is None
+
 class Music:
     def __init__(self, path, genre, beat_spectrum, spectral_flux, zero_crossing_rate, spectral_centroid):
         self.path = path
@@ -11,6 +14,7 @@ class Music:
         self.spectral_centroid = spectral_centroid
 
     def dist(self, other):
+        if contiens_None(self) or contiens_None(other): return 1e99
         SFdist = euclidean(self.spectralflux, other.spectralflux)
         BSdist = euclidean(self.beatspectrum, other.beatspectrum)
         ZCRdist = abs(self.zerocrossingrate-other.zerocrossingrate)
