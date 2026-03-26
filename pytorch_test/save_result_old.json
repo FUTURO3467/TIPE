@@ -1,0 +1,40 @@
+{
+ "Classical_Test": 969,
+ "Classical_Succes": 510,
+ "HipHop_Test": 995,
+ "HipHop_Succes": 461,
+ "Jazz_Test": 1045,
+ "Jazz_Succes": 198,
+ "Rock_Test": 994,
+ "Rock_Succes": 757,
+ "Classical_Ratio": 0.5263,
+ "HipHop_Ratio": 0.4633,
+ "Jazz_Ratio": 0.1895,
+ "Rock_Ratio": 0.7616,
+ "Matrice_De_Confusion": [
+  [
+   510,
+   30,
+   63,
+   366
+  ],
+  [
+   34,
+   461,
+   221,
+   279
+  ],
+  [
+   133,
+   279,
+   198,
+   435
+  ],
+  [
+   88,
+   84,
+   65,
+   757
+  ]
+ ]
+}

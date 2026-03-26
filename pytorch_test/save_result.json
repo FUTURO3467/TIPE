@@ -1,40 +1,28 @@
 {
  "Classical_Test": 969,
- "Classical_Succes": 510,
+ "Classical_Succes": 812,
  "HipHop_Test": 995,
- "HipHop_Succes": 461,
- "Jazz_Test": 1045,
- "Jazz_Succes": 198,
+ "HipHop_Succes": 765,
  "Rock_Test": 994,
- "Rock_Succes": 757,
- "Classical_Ratio": 0.5263,
- "HipHop_Ratio": 0.4633,
- "Jazz_Ratio": 0.1895,
- "Rock_Ratio": 0.7616,
+ "Rock_Succes": 657,
+ "Classical_Ratio": 0.838,
+ "HipHop_Ratio": 0.7688,
+ "Rock_Ratio": 0.661,
  "Matrice_De_Confusion": [
   [
-   510,
-   30,
-   63,
-   366
+   812,
+   46,
+   111
   ],
   [
-   34,
-   461,
-   221,
-   279
+   74,
+   765,
+   156
   ],
   [
-   133,
-   279,
-   198,
-   435
-  ],
-  [
-   88,
-   84,
-   65,
-   757
+   242,
+   95,
+   657
   ]
  ]
 }
