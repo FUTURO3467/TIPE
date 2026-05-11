@@ -42,10 +42,7 @@ class MusicGenreDataset(Dataset):
         return len(self.files)
 
     def __getitem__(self, idx):
-        # Charger audio
         audio, sr = torchaudio.load(self.files[idx])
-
-        # Resample si nécessaire
         if sr != self.sample_rate:
             resample = T.Resample(sr, self.sample_rate)
             audio = resample(audio)
@@ -54,19 +51,12 @@ class MusicGenreDataset(Dataset):
         # Convertir en mono si stéréo
         if audio.shape[0] > 1:
             audio = torch.mean(audio, dim=0, keepdim=True)
-
-        # MelSpectrogram
-        features = self.transform(audio)  # [1, n_mels, time]
-
-        # Répéter sur 3 canaux pour ResNet18
-        features = features.expand(3, -1, -1)  # [3, n_mels, time]
-
-        # Padding ou cropping pour longueur fixe
+        features = self.transform(audio)
+        features = features.expand(3, -1, -1)
         if features.shape[2] < self.fixed_len:
             pad_size = self.fixed_len - features.shape[2]
             features = F.pad(features, (0, pad_size))
         else:
             features = features[:, :, :self.fixed_len]
-
         label = self.labels[idx]
         return features, label

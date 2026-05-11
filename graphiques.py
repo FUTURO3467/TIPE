@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-categories = ['Rock', 'Classique', 'HipHop']
+categories = ['Rock','HipHop', 'Classique', 'Jazz']
 
-pytorch_model = [66.1, 76.88, 83.8]
-k_plus_proches = [67.51, 69.93, 53.49]
+pytorch_model = [62.58, 60.88, 81.1, 22.97]
+k_plus_proches = [67.2, 60.47, 69.52, 13.85]
 
 x = np.arange(len(categories))
 
@@ -16,7 +16,7 @@ plt.bar(x + bar_width/2, k_plus_proches, width=bar_width, label='k-plus proches 
 
 plt.xlabel('Genre musical')
 plt.ylabel('Taux de réussite (%)')
-plt.title('Taux de réponses correctes sans le Jazz')
+plt.title('Taux de réponses correctes ')
 # Pour afficher les noms des catégories sur les positions de l'axe des x.
 plt.xticks(x, categories)
 plt.legend()

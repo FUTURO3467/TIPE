@@ -5,20 +5,20 @@ from selenium.webdriver.common.keys import Keys
 import time
 from selenium.webdriver.chrome.options import Options
 
-fileName = r"D:\BDDTIPE\DownloadJazz.txt"
-links = []
-with open(fileName, 'r') as file:
+fichier_liens = r"D:\BDDTIPE\DownloadJazz.txt"
+liens = []
+with open(fichier_liens, 'r') as fichier:
     # Read each line in the file
-    for line in file:
+    for ligne in fichier:
         # Print each line
-        links.append(line.strip())
+        liens.append(ligne.strip())
 
 service = Service(executable_path="chromedriver.exe")
-dlpath = r'D:\BDDTIPE\Jazz'
+chemin_telechargement = r'D:\BDDTIPE\Jazz'
 
 chrome_options = Options()
 chrome_options.add_experimental_option('prefs', {
-    'download.default_directory': dlpath,
+    'download.default_directory': chemin_telechargement,
     'download.enable_downloads': True,
     'download.prompt_for_download': False,
     'download.directory_upgrade': True,
@@ -47,23 +47,21 @@ def log_in():
         email.send_keys("joublotleopold@gmail.com")
         password = driver.find_element(By.XPATH, '//*[@id="password"]')
         password.clear()
-        password.send_keys("Futuro34670;")
+        password.send_keys("password")
         password.send_keys(Keys.ENTER)
 
     except:
         print("No login button found / Problem with the login")
 
 
-driver.get(
-    "https://freemusicarchive.org/search?adv=1&search-genre=Rock&duration_from=0&duration_to=4&music-filter-CC-attribution-only=1&music-filter-CC-attribution-sharealike=1&music-filter-CC-attribution-noncommercial=1&music-filter-CC-attribution-noncommercial-sharealike=1&music-filter-remix-allowed=1")
-# driver.get("https://freemusicarchive.org/music/charts/this-month")
+driver.get("https://freemusicarchive.org/music/charts/this-month")
 time.sleep(0.3)
 accept_cookies()
 time.sleep(0.3)
 log_in()
 time.sleep(0.5)
 driver.capabilities.setdefault("se:downloadsEnabled", True)
-for link in links:
+for link in liens:
     driver.execute_script("window.open('" + link + "');")
     time.sleep(1)
 time.sleep(20)

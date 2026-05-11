@@ -2,7 +2,13 @@
 OriginLink=`cat Link.txt`;
 ResFile=`cat SaveFileName.txt`;
 link= "$OriginLink";
-for i in {1..10}; do OriginLink+="$i";echo $OriginLink; wget --output-document=Res"$i".txt "$OriginLink"; cat Res"$i".txt >> "Res.txt";OriginLink=`cat Link.txt`;done
+for i in {1..10}; do
+    OriginLink+="$i";
+    echo $OriginLink;
+    wget --output-document=Res"$i".txt "$OriginLink";
+    cat Res"$i".txt >> "Res.txt";
+    OriginLink=`cat Link.txt`;
+done
 chmod +x extract.py;
 python3 extract.py -u "Res.txt";
 sed '/download/!d' Res\ -\ url.csv >> "$ResFile.txt";

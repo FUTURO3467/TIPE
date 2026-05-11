@@ -1,0 +1,55 @@
+{
+ "Count5Rock": 994,
+ "CountSuccess5Rock": 611,
+ "SuccessRate5Rock": 0.6147,
+ "Count10Rock": 994,
+ "CountSuccess10Rock": 639,
+ "SuccessRate10Rock": 0.6429,
+ "Count20Rock": 994,
+ "CountSuccess20Rock": 666,
+ "SuccessRate20Rock": 0.67,
+ "Count55Rock": 994,
+ "CountSuccess55Rock": 645,
+ "SuccessRate55Rock": 0.6489,
+ "Count5HipHop": 759,
+ "CountSuccess5HipHop": 409,
+ "SuccessRate5HipHop": 0.5389,
+ "Count10HipHop": 759,
+ "CountSuccess10HipHop": 415,
+ "SuccessRate10HipHop": 0.5468,
+ "Count20HipHop": 759,
+ "CountSuccess20HipHop": 415,
+ "SuccessRate20HipHop": 0.5468,
+ "Count55HipHop": 759,
+ "CountSuccess55HipHop": 400,
+ "SuccessRate55HipHop": 0.527,
+ "Count5Classical": 971,
+ "CountSuccess5Classical": 670,
+ "SuccessRate5Classical": 0.69,
+ "Count10Classical": 971,
+ "CountSuccess10Classical": 675,
+ "SuccessRate10Classical": 0.6952,
+ "Count20Classical": 971,
+ "CountSuccess20Classical": 669,
+ "SuccessRate20Classical": 0.689,
+ "Count55Classical": 971,
+ "CountSuccess55Classical": 646,
+ "SuccessRate55Classical": 0.6653,
+ "Confusion_55": [
+  [
+   645,
+   300,
+   215
+  ],
+  [
+   175,
+   400,
+   110
+  ],
+  [
+   174,
+   59,
+   646
+  ]
+ ]
+}

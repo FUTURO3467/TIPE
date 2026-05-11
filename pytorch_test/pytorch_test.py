@@ -1,5 +1,5 @@
 from torch.utils.data import DataLoader
-from music_genre_cnn import MusicGenreCNN
+from music_genre_cnn import CNNGenreMusical
 from music_genre_database import MusicGenreDataset
 import torchvision.models as models
 import torch.nn as nn
