@@ -51,19 +51,19 @@ def beatspectrum_features(hist, bpms):
     elif len(top2_indices) == 1:
         p2 = peak_values[top2_indices[0]]
         idx_p1 = peaks[top2_indices[0]]
-    f_ratio12 = p1 / p2 if p2 != 0 else 1e99
+    ratio12 = p1 / p2 if p2 != 0 else 1e99
     #BPM du second pic
-    f_bpm2 = bpms[idx_p2]
+    bpm2 = bpms[idx_p2]
     #distance moyenne pondérée au pic principal
     indices = np.arange(N)
-    f_width = np.sum(np.abs(indices - max_bpm) * hist) / H
+    width = np.sum(np.abs(indices - max_bpm) * hist) / H
     #Applatissement
     geo_mean = np.exp(np.mean(np.log(hist)))
-    f_flatness = geo_mean / moyenne
+    flatness = geo_mean / moyenne
     #Densité de pics
-    f_peak_density = len(peaks) / N
+    peak_density = len(peaks) / N
     #Variabilité locale des pics
-    f_lpv = np.var(peak_values)
+    lpv = np.var(peak_values)
     return [float(f) for f in
                 [
                 moyenne,
@@ -72,13 +72,13 @@ def beatspectrum_features(hist, bpms):
                 kurt,
                 max,
                 float(max_bpm),
-                f_entropy,
-                f_ratio12,
-                f_bpm2,
-                f_width,
-                f_flatness,
-                f_peak_density,
-                f_lpv
+                entropy,
+                ratio12,
+                bpm2,
+                width,
+                flatness,
+                peak_density,
+                lpv
                 ]
             ]
 
@@ -139,7 +139,6 @@ Envelope4 = []
 Envelope5 = []
 Envelope6 = []
 def BeatSpectrum(data, samplerate):
-    # Paramètres
     MinBPM = 40
     MaxBPM = 200
 
